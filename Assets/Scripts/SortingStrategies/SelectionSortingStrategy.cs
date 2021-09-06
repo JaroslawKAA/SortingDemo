@@ -6,17 +6,15 @@ namespace SortingStrategies
 {
     public class SelectionSortingStrategyBase : SortingStrategyBase
     {
-        private int index = 0;
-        private GameObject slotToReplace;
-        private RobotController _robotController;
+        private int _index;
+        private GameObject minimalBallSlot;
 
         public SelectionSortingStrategyBase(GameObject instance) : base(instance)
         {
-            StateMachine.onProcedureComplete += OnProcedureComplete;
-            _robotController = instance.GetComponent<RobotController>();
+            _index = 0;
         }
 
-        public override void Sort()
+        public override void LoadSortingStrategy()
         {
             StateMachine.AddSortingStep(GoToMinimalBall);
             StateMachine.AddSortingStep(GetMinimalBall);
@@ -29,26 +27,25 @@ namespace SortingStrategies
         
         private void GoToMinimalBall()
         {
-            if (index >= GameManager.S.slots.Length)
+            if (_index >= GameManager.S.slots.Length)
                 return;
             
-            GameObject minimumBall = GameManager.S.slots
-                .Skip(index)
+            minimalBallSlot = GameManager.S.slots
+                .Skip(_index)
                 .OrderBy(o => o.transform
                     .GetChild(0)
                     .GetComponent<Ball>()
                     .Id)
                 .First();
-            slotToReplace = minimumBall;
             
-            StateMachine.GoTo(slotToReplace.transform);
+            StateMachine.GoTo(minimalBallSlot.transform);
         }
 
         private void GetMinimalBall()
         {
-            if (slotToReplace.transform.childCount > 0)
+            if (minimalBallSlot.transform.childCount > 0)
             {
-                StateMachine.GetBall(slotToReplace, Hands.Left); 
+                StateMachine.GetBall(minimalBallSlot, Hands.Left); 
             }
             else
             {
@@ -58,14 +55,14 @@ namespace SortingStrategies
 
         private void GoToRightBallPlace()
         {
-            StateMachine.GoTo(GameManager.S.slots[index].transform);
+            StateMachine.GoTo(GameManager.S.slots[_index].transform);
         }
 
         private void GetSecondBall()
         {
-            if (GameManager.S.slots[index].transform.childCount > 0)
+            if (GameManager.S.slots[_index].transform.childCount > 0)
             {
-                StateMachine.GetBall(GameManager.S.slots[index], Hands.Right);
+                StateMachine.GetBall(GameManager.S.slots[_index], Hands.Right);
             }
             else
             {
@@ -75,9 +72,9 @@ namespace SortingStrategies
 
         private void PutFirstBall()
         {
-            if (_robotController.leftHandObject != null)
+            if (RobotController.leftHandObject != null)
             {
-                StateMachine.PutBall(GameManager.S.slots[index], Hands.Left);
+                StateMachine.PutBall(GameManager.S.slots[_index], Hands.Left);
             }
             else
             {
@@ -87,14 +84,14 @@ namespace SortingStrategies
 
         private void GoToEmptySlot()
         {
-            StateMachine.GoTo(slotToReplace.transform);
+            StateMachine.GoTo(minimalBallSlot.transform);
         }
 
         private void PutSecondBall()
         {
-            if (_robotController.rightHandObject != null)
+            if (RobotController.rightHandObject != null)
             {
-                StateMachine.PutBall(slotToReplace, Hands.Right);
+                StateMachine.PutBall(minimalBallSlot, Hands.Right);
             }
             else
             {
@@ -102,28 +99,10 @@ namespace SortingStrategies
             }
         }
 
-        private void OnProcedureComplete()
+        protected override void OnProcedureComplete()
         {
-            index++;
-            CheckCompleteCondition();
-        }
-
-        private void CheckCompleteCondition()
-        {
-            int i = 1;
-            foreach (GameObject slot in GameManager.S.slots)
-            {
-                if (slot.transform.GetChild(0).GetComponent<Ball>().Id != i)
-                {
-                    return;
-                }
-
-                i++;
-            }
-            
-            Debug.LogWarning("Sorting Complete");
-            StateMachine.StopSorting();
-            Invoke_OnSortingComplete();
+            base.OnProcedureComplete();
+            _index++;
         }
     }
 }

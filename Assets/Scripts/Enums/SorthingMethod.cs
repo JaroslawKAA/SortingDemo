@@ -1,6 +1,6 @@
 
 public enum SorthingMethod{
-    QuickSort,
+    InsertionSort,
     BubbleSort,
     SelectionSort
     

@@ -1,6 +1,4 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 public class GameEvents : MonoBehaviour
@@ -27,8 +25,28 @@ public class GameEvents : MonoBehaviour
     /// <summary>
     /// Run StartSorting event.
     /// </summary>
-    public void StartSorting(SorthingMethod sorthingMethod)
+    public void Invoke_OnStartSorting(SorthingMethod sorthingMethod)
     {
         onStartSorting?.Invoke(sorthingMethod);
+    }
+    
+    public event Action onSortingComplete;
+    public void Invoke_OnSortingComplete()
+    {
+        onSortingComplete?.Invoke();
+    }
+
+    public event Action onRobotStateChange;
+    
+    public void Invoke_OnRobotStateChange()
+    {
+        onRobotStateChange?.Invoke();
+    }
+    
+    public event Action onProcedureComplete;
+
+    public void Invoke_OnProcedureComplete()
+    {
+        onProcedureComplete?.Invoke();
     }
 }

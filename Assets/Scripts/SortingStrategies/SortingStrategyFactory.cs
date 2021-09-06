@@ -8,7 +8,7 @@ public static class SortingStrategyFactory
         return sorthingMethod switch
         {
             SorthingMethod.BubbleSort => new BubbleSortingStrategyBase(instance),
-            SorthingMethod.QuickSort => new QuickSortingStrategyBase(instance),
+            SorthingMethod.InsertionSort => new InsertionSortingStrategy(instance),
             SorthingMethod.SelectionSort => new SelectionSortingStrategyBase(instance)
         };
     }

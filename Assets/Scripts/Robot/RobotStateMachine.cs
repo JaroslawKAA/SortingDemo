@@ -7,7 +7,6 @@ namespace Robot
 {
     public class RobotStateMachine : MonoBehaviour
     {
-        public event Action onProcedureComplete;
 
         private RobotStateBase _currentState;
 
@@ -19,6 +18,7 @@ namespace Robot
                 _currentState?.OnExit();
                 _currentState = value;
                 _currentState.OnEnter();
+                GameEvents.S.Invoke_OnRobotStateChange();
             }
         }
 
@@ -39,7 +39,7 @@ namespace Robot
             procedureIndex++;
             if (procedureIndex >= SortingProcedure.Count)
             {
-                onProcedureComplete?.Invoke();
+                GameEvents.S.Invoke_OnProcedureComplete();
                 procedureIndex = 0;
             }
         }
@@ -98,12 +98,17 @@ namespace Robot
         public void NextProcedure()
         {
             IncrementProcedureIndex();
-            SortingProcedure[procedureIndex]?.Invoke();
+            if (procedureIndex < SortingProcedure.Count)
+            {
+                SortingProcedure[procedureIndex]?.Invoke();
+            }
         }
 
         public void StopSorting()
         {
             _runSorting = false;
+            SortingProcedure = new List<SortingStep>();
         }
+        
     }
 }

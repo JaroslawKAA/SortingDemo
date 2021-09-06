@@ -1,5 +1,4 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 public class Ball : MonoBehaviour
@@ -21,19 +20,12 @@ public class Ball : MonoBehaviour
 
     // Start is called before the first frame update
 
-    void Start()
+    void OnEnable()
     {
         Id = NextId;
         SetColor();
     }
-
-    // Update is called once per frame
-
-    void Update()
-    {
-        
-    }
-
+    
     private void SetColor()
     {
         Renderer renderer = GetComponent<Renderer>();
@@ -41,5 +33,10 @@ public class Ball : MonoBehaviour
             (float)((float) Id / (float) GameManager.S.slots.Length),
             renderer.material.GetColor("_Color").b);
         renderer.material.SetColor("_Color", color);
+    }
+
+    private void OnDestroy()
+    {
+        _nextId--;
     }
 }

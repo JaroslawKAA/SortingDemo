@@ -1,19 +1,15 @@
 using System;
-using System.Collections;
-using System.Collections.Generic;
 using Robot;
 using UnityEngine;
 
 public abstract class SortingStrategyBase
 {
-    public event Action onSortingComplete;
-    
-    private GameObject _instance;
+    private RobotController _robotController;
 
-    protected GameObject Instance
+    protected RobotController RobotController
     {
-        get => _instance;
-        private set => _instance = value;
+        get => _robotController;
+        private set => _robotController = value;
     }
 
     private RobotStateMachine _stateMachine;
@@ -21,22 +17,38 @@ public abstract class SortingStrategyBase
     protected RobotStateMachine StateMachine
     {
         get => _stateMachine;
-        private set
-        {
-            _stateMachine = value;
-        }
+        private set { _stateMachine = value; }
     }
 
     public SortingStrategyBase(GameObject instance)
     {
-        Instance = instance;
         StateMachine = instance.GetComponent<RobotStateMachine>();
+        RobotController = instance.GetComponent<RobotController>();
+        GameEvents.S.onProcedureComplete += OnProcedureComplete;
     }
 
-    public abstract void Sort();
+    public abstract void LoadSortingStrategy();
 
-    public void Invoke_OnSortingComplete()
+    protected virtual void OnProcedureComplete()
     {
-        onSortingComplete?.Invoke();
+        CheckCompleteCondition();
+    }
+    
+    private void CheckCompleteCondition()
+    {
+        int i = 1;
+        foreach (GameObject slot in GameManager.S.slots)
+        {
+            if (slot.transform.GetChild(0).GetComponent<Ball>().Id != i)
+            {
+                return;
+            }
+
+            i++;
+        }
+            
+        Debug.LogWarning("Sorting Complete");
+        StateMachine.StopSorting();
+        GameEvents.S.Invoke_OnSortingComplete();
     }
 }
