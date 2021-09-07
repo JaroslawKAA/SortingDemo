@@ -1,3 +1,4 @@
+using System;
 using UnityEngine;
 using UnityEngine.Assertions;
 
@@ -22,6 +23,7 @@ namespace Robot
         void Start()
         {
             GameEvents.S.onStartSorting += StartSorting;
+            GameEvents.S.onSortingComplete += DestroyBallsInHands;
         }
 
         private void StartSorting(SorthingMethod sortingMethod)
@@ -29,6 +31,15 @@ namespace Robot
             SortingStrategy = SortingStrategyFactory.GetStrategy(sortingMethod, gameObject);
             
             SortingStrategy.LoadSortingStrategy();
+        }
+
+        private void DestroyBallsInHands()
+        {
+            if (leftHandObject != null)
+                Destroy(leftHandObject);
+
+            if (rightHandObject != null)
+                Destroy(rightHandObject);
         }
     }
 }

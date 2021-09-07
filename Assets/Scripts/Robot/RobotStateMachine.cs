@@ -1,7 +1,5 @@
-using System;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.Assertions;
 
 namespace Robot
 {
@@ -27,6 +25,7 @@ namespace Robot
         private RobotPutBallState PutBallState { get; set; }
 
         private bool _runSorting;
+        private Animator _animator;
 
         public delegate void SortingStep();
 
@@ -59,7 +58,10 @@ namespace Robot
 
             SortingProcedure = new List<SortingStep>();
 
+            _animator = GetComponent<Animator>();
+
             GameEvents.S.onStartSorting += StartSorting;
+            GameEvents.S.onSortingComplete += StopSorting;
         }
 
         // Update is called once per frame
@@ -108,6 +110,8 @@ namespace Robot
         {
             _runSorting = false;
             SortingProcedure = new List<SortingStep>();
+            procedureIndex = 0;
+            _animator.SetBool("GetBall", false);
         }
         
     }

@@ -3,9 +3,9 @@ using UnityEngine;
 
 public static class SortingStrategyFactory
 {
-    public static SortingStrategyBase GetStrategy(SorthingMethod sorthingMethod, GameObject instance)
+    public static SortingStrategyBase GetStrategy(SorthingMethod sortingMethod, GameObject instance)
     {
-        return sorthingMethod switch
+        return sortingMethod switch
         {
             SorthingMethod.BubbleSort => new BubbleSortingStrategyBase(instance),
             SorthingMethod.InsertionSort => new InsertionSortingStrategy(instance),
